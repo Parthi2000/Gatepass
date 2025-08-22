@@ -1,0 +1,169 @@
+import React from 'react';
+import { PackageItemSubmission } from '../../types/item';
+import { Hash, DollarSign, FileText, Trash2 } from 'lucide-react';
+
+interface ItemFormSectionProps {
+  item: PackageItemSubmission;
+  index: number;
+  onChange: (index: number, updates: Partial<PackageItemSubmission>) => void;
+  onRemove: (index: number) => void;
+  showRemoveButton: boolean;
+}
+
+export const ItemFormSection: React.FC<ItemFormSectionProps> = (props) => {
+  const { item, index, onChange, onRemove, showRemoveButton } = props;
+
+  const handleInputChange = (field: keyof PackageItemSubmission) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    onChange(index, { [field]: e.target.value });
+  };
+  return (
+  return (
+    <div className="border-b border-slate-200 pb-4 mb-4">
+      <div className="flex justify-between items-center mb-3">
+        <h4 className="text-md font-semibold text-slate-700">
+          Item {index + 1}
+        </h4>
+        {showRemoveButton && (
+          <button
+            type="button"
+            onClick={() => onRemove(index)}
+            className="text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-50 transition-colors"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>          <label htmlFor={`serialNumber-${index}`} className="block mb-1 text-sm font-medium text-slate-700">
+            <Hash className="inline h-4 w-4 mr-1" />
+            Serial/Part Number*
+          </label>
+          <input
+            type="text"
+            id={`serialNumber-${index}`}
+            value={item.serialNumber}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(index, { serialNumber: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Unique identifier for item"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor={\`hsnCode-\${index}\`} className="block mb-1 text-sm font-medium text-slate-700">
+            HSN Code*
+          </label>
+          <input
+            type="text"
+            id={\`hsnCode-\${index}\`}
+            value={item.hsnCode}
+            onChange={(e) => onChange(index, { hsnCode: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="e.g., 8471"
+            required
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+        <div>
+          <label htmlFor={\`quantity-\${index}\`} className="block mb-1 text-sm font-medium text-slate-700">
+            Quantity*
+          </label>
+          <input
+            type="number"
+            id={\`quantity-\${index}\`}
+            value={item.quantity}
+            onChange={(e) => onChange(index, { quantity: parseInt(e.target.value) || 0 })}
+            min="1"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor={\`unitPrice-\${index}\`} className="block mb-1 text-sm font-medium text-slate-700">
+            <DollarSign className="inline h-4 w-4 mr-1" />
+            Unit Price*
+          </label>
+          <input
+            type="text"
+            id={\`unitPrice-\${index}\`}
+            value={item.unitPrice}
+            onChange={(e) => onChange(index, { unitPrice: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="e.g., 1000.00"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor={\`purpose-\${index}\`} className="block mb-1 text-sm font-medium text-slate-700">
+            <FileText className="inline h-4 w-4 mr-1" />
+            Purpose*
+          </label>
+          <input
+            type="text"
+            id={\`purpose-\${index}\`}
+            value={item.purpose}
+            onChange={(e) => onChange(index, { purpose: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="e.g., Office use, Project sample"
+            required
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+        <div>
+          <label htmlFor={\`weight-\${index}\`} className="block mb-1 text-sm font-medium text-slate-700">
+            Weight*
+          </label>
+          <input
+            type="text"
+            id={\`weight-\${index}\`}
+            value={item.weight}
+            onChange={(e) => onChange(index, { weight: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="e.g., 5.5"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor={\`weightUnit-\${index}\`} className="block mb-1 text-sm font-medium text-slate-700">
+            Weight Unit*
+          </label>
+          <select
+            id={\`weightUnit-\${index}\`}
+            value={item.weightUnit}
+            onChange={(e) => onChange(index, { weightUnit: e.target.value as 'kg' | 'g' | 'lb' })}
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="kg">kg</option>
+            <option value="g">g</option>
+            <option value="lb">lb</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="mt-3">
+        <label htmlFor={\`remarks-\${index}\`} className="block mb-1 text-sm font-medium text-slate-700">
+          Remarks
+        </label>
+        <textarea
+          id={\`remarks-\${index}\`}
+          value={item.remarks || ''}
+          onChange={(e) => onChange(index, { remarks: e.target.value })}
+          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Any additional information about this item"
+          rows={2}
+        />
+      </div>
+    </div>
+  );
+};

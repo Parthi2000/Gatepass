@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 23 37 84;     /* slate-900 */
+    --color-accent: 37 99 235;     /* blue-600 */
+    --color-secondary: 71 85 105;  /* slate-600 */
+  }
+  
+  body {
+    @apply bg-gradient-to-br from-slate-50 to-blue-50;
+  }
+}
+
+.glass-effect {
+  @apply bg-white bg-opacity-90 backdrop-blur-sm;
+}
+
+.aerospace-card {
+  @apply relative overflow-hidden rounded-lg border border-slate-200 bg-white shadow-md transition-all duration-300 hover:shadow-lg;
+  background-image: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.9) 100%);
+}
+
+.aerospace-pattern {
+  @apply absolute inset-0 opacity-[0.03] pointer-events-none;
+  background-image: url('https://images.pexels.com/photos/2156/sky-earth-space-working.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: multiply;
+}
+
+.status-badge {
+  @apply relative overflow-hidden rounded-full px-3 py-1 text-xs font-medium;
+}
+
+.status-badge::before {
+  @apply absolute inset-0 opacity-10;
+  content: '';
+  background-image: linear-gradient(45deg, transparent 0%, white 100%);
+}
