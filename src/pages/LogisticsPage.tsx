@@ -17,7 +17,8 @@ import {
   Clock,
   Scale,
   ExternalLink,
-  ImageIcon
+  ImageIcon,
+  ChevronDown
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
@@ -31,6 +32,9 @@ const LogisticsPage: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<any>(null);
   const [showLogisticsForm, setShowLogisticsForm] = useState(false);
+  const [showAllSubmitted, setShowAllSubmitted] = useState(false);
+  const [showAllApproved, setShowAllApproved] = useState(false);
+  const [showAllDispatched, setShowAllDispatched] = useState(false);
   
   // Define the item type
   interface LogisticsItem {
@@ -464,12 +468,14 @@ const LogisticsPage: React.FC = () => {
         {/* Submitted Packages Table */}
         <div className="mt-8 bg-white shadow-sm rounded-lg border border-slate-200">
           <div className="px-6 py-4 border-b border-slate-200">
-            <h2 className="text-lg font-semibold text-slate-800">
-              Submitted Packages
-            </h2>
-            <p className="text-sm text-slate-600 mt-1">
-              {packages.filter(p => p.status === 'submitted').length} packages found
-            </p>
+              <div>
+                <h2 className="text-lg font-semibold text-slate-800">
+                  Submitted Packages
+                </h2>
+                <p className="text-sm text-slate-600 mt-1">
+                  {packages.filter(p => p.status === 'submitted').length} packages found
+                </p>
+              </div>
           </div>
           
           <div className="overflow-x-auto">
@@ -499,6 +505,7 @@ const LogisticsPage: React.FC = () => {
               <tbody className="bg-white divide-y divide-slate-200">
                 {packages
                   .filter(pkg => pkg.status === 'submitted')
+                  .slice(0, showAllSubmitted ? undefined : 5)
                   .map((pkg) => (
                   <tr key={pkg.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
@@ -564,10 +571,20 @@ const LogisticsPage: React.FC = () => {
               </tbody>
             </table>
             
-            {packages.filter(p => p.status === 'submitted').length === 0 && (
+            {packages.filter(p => p.status === 'submitted').length === 0 ? (
               <div className="text-center py-12">
                 <Package className="h-12 w-12 text-slate-400 mx-auto mb-4" />
                 <p className="text-slate-600">No submitted packages found</p>
+              </div>
+            ) : packages.filter(p => p.status === 'submitted').length > 5 && (
+              <div className="px-6 py-4 border-t border-slate-200 text-center">
+                <button
+                  onClick={() => setShowAllSubmitted(!showAllSubmitted)}
+                  className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center justify-center w-full py-2"
+                >
+                  {showAllSubmitted ? 'Show Less' : `View All ${packages.filter(p => p.status === 'submitted').length} Packages`}
+                  <ChevronDown className={`h-4 w-4 ml-1 transition-transform ${showAllSubmitted ? 'transform rotate-180' : ''}`} />
+                </button>
               </div>
             )}
           </div>
@@ -576,12 +593,14 @@ const LogisticsPage: React.FC = () => {
         {/* Approved Packages Table */}
         <div className="mt-8 bg-white shadow-sm rounded-lg border border-slate-200">
           <div className="px-6 py-4 border-b border-slate-200">
-            <h2 className="text-lg font-semibold text-slate-800">
-              Approved Packages
-            </h2>
-            <p className="text-sm text-slate-600 mt-1">
-              {packages.filter(p => p.status === 'approved').length} packages found
-            </p>
+              <div>
+                <h2 className="text-lg font-semibold text-slate-800">
+                  Approved Packages
+                </h2>
+                <p className="text-sm text-slate-600 mt-1">
+                  {packages.filter(p => p.status === 'approved').length} packages found
+                </p>
+              </div>
           </div>
           
           <div className="overflow-x-auto">
@@ -611,6 +630,7 @@ const LogisticsPage: React.FC = () => {
               <tbody className="bg-white divide-y divide-slate-200">
                 {packages
                   .filter(pkg => pkg.status === 'approved')
+                  .slice(0, showAllApproved ? undefined : 5)
                   .map((pkg) => (
                   <tr key={pkg.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
@@ -665,10 +685,20 @@ const LogisticsPage: React.FC = () => {
               </tbody>
             </table>
             
-            {packages.filter(p => p.status === 'approved').length === 0 && (
+            {packages.filter(p => p.status === 'approved').length === 0 ? (
               <div className="text-center py-12">
                 <Package className="h-12 w-12 text-slate-400 mx-auto mb-4" />
                 <p className="text-slate-600">No approved packages found</p>
+              </div>
+            ) : packages.filter(p => p.status === 'approved').length > 5 && (
+              <div className="px-6 py-4 border-t border-slate-200 text-center">
+                <button
+                  onClick={() => setShowAllApproved(!showAllApproved)}
+                  className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center justify-center w-full py-2"
+                >
+                  {showAllApproved ? 'Show Less' : `View All ${packages.filter(p => p.status === 'approved').length} Packages`}
+                  <ChevronDown className={`h-4 w-4 ml-1 transition-transform ${showAllApproved ? 'transform rotate-180' : ''}`} />
+                </button>
               </div>
             )}
           </div>
@@ -677,12 +707,14 @@ const LogisticsPage: React.FC = () => {
         {/* Dispatched Packages Table */}
         <div className="mt-8 bg-white shadow-sm rounded-lg border border-slate-200">
           <div className="px-6 py-4 border-b border-slate-200">
-            <h2 className="text-lg font-semibold text-slate-800">
-              Dispatched Packages
-            </h2>
-            <p className="text-sm text-slate-600 mt-1">
-              {packages.filter(p => p.status === 'dispatched').length} packages found
-            </p>
+              <div>
+                <h2 className="text-lg font-semibold text-slate-800">
+                  Dispatched Packages
+                </h2>
+                <p className="text-sm text-slate-600 mt-1">
+                  {packages.filter(p => p.status === 'dispatched').length} packages found
+                </p>
+              </div>
           </div>
           
           <div className="overflow-x-auto">
@@ -712,6 +744,7 @@ const LogisticsPage: React.FC = () => {
               <tbody className="bg-white divide-y divide-slate-200">
                 {packages
                   .filter(pkg => pkg.status === 'dispatched')
+                  .slice(0, showAllDispatched ? undefined : 5)
                   .map((pkg) => (
                   <tr key={pkg.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
@@ -766,10 +799,20 @@ const LogisticsPage: React.FC = () => {
               </tbody>
             </table>
             
-            {packages.filter(p => p.status === 'dispatched').length === 0 && (
+            {packages.filter(p => p.status === 'dispatched').length === 0 ? (
               <div className="text-center py-12">
                 <Truck className="h-12 w-12 text-slate-400 mx-auto mb-4" />
                 <p className="text-slate-600">No dispatched packages found</p>
+              </div>
+            ) : packages.filter(p => p.status === 'dispatched').length > 5 && (
+              <div className="px-6 py-4 border-t border-slate-200 text-center">
+                <button
+                  onClick={() => setShowAllDispatched(!showAllDispatched)}
+                  className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center justify-center w-full py-2"
+                >
+                  {showAllDispatched ? 'Show Less' : `View All ${packages.filter(p => p.status === 'dispatched').length} Packages`}
+                  <ChevronDown className={`h-4 w-4 ml-1 transition-transform ${showAllDispatched ? 'transform rotate-180' : ''}`} />
+                </button>
               </div>
             )}
           </div>
