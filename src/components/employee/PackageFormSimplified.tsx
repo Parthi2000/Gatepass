@@ -11,7 +11,17 @@ import {
   PackageIcon,
   Check,
   Scale,
-  ImageIcon
+  ImageIcon,
+  Hash,
+  Barcode,
+  FileText,
+  Package,
+  Tag,
+  DollarSign,
+  FileDigit,
+  User,
+  MapPin,
+  MessageSquare
 } from 'lucide-react';
 import { generateGatePassNumber } from '../../utils/gatePassGenerator';
 import { ItemFormSection } from './ItemFormSection';
@@ -867,14 +877,160 @@ const PackageFormSimplified: React.FC<PackageFormProps> = ({ onSubmit, packageTo
                 <p className="text-slate-600 mb-4">Please review your package details before submitting.</p>
                 
                 <div className="space-y-4 mb-6">
-                  <div>
-                    <span className="font-medium">Recipient:</span> {formData.recipient}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-start gap-2">
+                      <User className="h-4 w-4 text-slate-900 mt-1 flex-shrink-0" />
+                      <div>
+                        <div className="text-sm text-slate-900">Consignee Name</div>
+                        <div className="font-medium">{formData.recipient}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <Truck className="h-4 w-4 text-slate-900 mt-1 flex-shrink-0" />
+                      <div>
+                        <div className="text-sm text-slate-900">Transportation</div>
+                        <div className="font-medium">{formData.transportationType === 'courier' ? 'Courier' : 'By Hand'}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <FileDigit className="h-4 w-4 text-slate-900 mt-1 flex-shrink-0" />
+                      <div>
+                        <div className="text-sm text-slate-900">Project Code</div>
+                        <div className="font-medium">{formData.projectCode || 'N/A'}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <MapPin className="h-4 w-4 text-slate-900 mt-1 flex-shrink-0" />
+                      <div>
+                        <div className="text-sm text-slate-900">To Address</div>
+                        <div className="font-medium">{formData.toAddress || 'N/A'}</div>
+                      </div>
+                    </div>
+                    
+                    {formData.remarks && (
+                      <div className="md:col-span-2 flex items-start gap-2 pt-2 border-t border-slate-100">
+                        <MessageSquare className="h-4 w-4 text-slate-900 mt-1 flex-shrink-0" />
+                        <div>
+                          <div className="text-sm text-slate-900">Remarks</div>
+                          <div className="font-medium text-slate-800">{formData.remarks}</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <span className="font-medium">Transportation:</span> {formData.transportationType === 'courier' ? 'Courier' : 'By Hand'}
-                  </div>
-                  <div>
-                    <span className="font-medium">Items:</span> {items.length} item(s)
+                  <div className="mt-4">
+                    <h4 className="font-medium mb-3">Item Details ({items.length}):</h4>
+                    <div className="space-y-4">
+                      {items.map((item, index) => (
+                        <div key={index} className="p-5 bg-white rounded-lg border border-slate-200 shadow-sm">
+                          <div className="flex items-center gap-2 mb-4">
+                            <Package className="h-5 w-5 text-blue-600" />
+                            <h5 className="font-semibold text-lg text-slate-800">Item {index + 1}</h5>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-base">
+                            {/* Item Identification */}
+                            <div className="space-y-4">
+                              <div className="flex items-center gap-2 text-slate-800 font-semibold border-b pb-2">
+                                <FileText className="h-4 w-4" />
+                                <span>Item Identification</span>
+                              </div>
+                              <div className="space-y-3 pl-1">
+                                <div className="flex items-start gap-3">
+                                  <Barcode className="h-4 w-4 text-slate-500 mt-1 flex-shrink-0" />
+                                  <div className="grid grid-cols-3 gap-2 w-full">
+                                    <span className="text-slate-700">Serial/Part No:</span>
+                                    <span className="col-span-2 font-medium text-slate-900">{item.serialNumber || 'N/A'}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                  <FileDigit className="h-4 w-4 text-slate-500 mt-1 flex-shrink-0" />
+                                  <div className="grid grid-cols-3 gap-2 w-full">
+                                    <span className="text-slate-700">HSN Code:</span>
+                                    <span className="col-span-2 font-medium text-slate-900">{item.hsnCode || 'N/A'}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                  <FileText className="h-4 w-4 text-slate-500 mt-1 flex-shrink-0" />
+                                  <div className="grid grid-cols-3 gap-2 w-full">
+                                    <span className="text-slate-700">Description:</span>
+                                    <span className="col-span-2 font-medium text-slate-900">{item.description || 'N/A'}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Quantity & Purpose */}
+                            <div className="space-y-4">
+                              <div className="flex items-center gap-2 text-slate-800 font-semibold border-b pb-2">
+                                <Scale className="h-4 w-4" />
+                                <span>Quantity & Value</span>
+                              </div>
+                              <div className="space-y-3 pl-1">
+                                <div className="flex items-start gap-3">
+                                  <Hash className="h-4 w-4 text-slate-500 mt-1 flex-shrink-0" />
+                                  <div className="grid grid-cols-3 gap-2 w-full">
+                                    <span className="text-slate-700">Quantity:</span>
+                                    <span className="col-span-2 font-medium text-slate-900">{item.quantity || '0'}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                  <Tag className="h-4 w-4 text-slate-500 mt-1 flex-shrink-0" />
+                                  <div className="grid grid-cols-3 gap-2 w-full">
+                                    <span className="text-slate-700">Unit Price:</span>
+                                    <span className="col-span-2 font-medium text-slate-900">₹{(Number(item.unitPrice) || 0).toFixed(2)}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                  <DollarSign className="h-4 w-4 text-slate-500 mt-1 flex-shrink-0" />
+                                  <div className="grid grid-cols-3 gap-2 w-full">
+                                    <span className="text-slate-700">Taxable Value:</span>
+                                    <span className="col-span-2 font-medium text-slate-900">
+                                      ₹{((Number(item.unitPrice) || 0) * (Number(item.quantity) || 0)).toFixed(2)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Before Packing Images */}
+                            {imageBeforePacking.length > 0 && (
+                              <div className="col-span-2 mt-4">
+                                <div className="font-medium text-slate-700 mb-2">Before Packing Images</div>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                  {imageBeforePacking.map((file, imgIndex) => (
+                                    <div key={imgIndex} className="relative group">
+                                      <img
+                                        src={URL.createObjectURL(file)}
+                                        alt={`Before packing ${imgIndex + 1}`}
+                                        className="w-full h-24 object-cover rounded-md border border-slate-200"
+                                      />
+                                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-md flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                        <button
+                                          type="button"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            window.open(URL.createObjectURL(file), '_blank');
+                                          }}
+                                          className="bg-white bg-opacity-80 rounded-full p-1.5 hover:bg-opacity-100 transition-all"
+                                          title="View larger"
+                                        >
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                                          </svg>
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   {formData.transportationType === 'courier' && (
                     <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">

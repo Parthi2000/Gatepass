@@ -317,9 +317,9 @@ const LogisticsPage: React.FC = () => {
                 <Clock className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500">Pending Processing</p>
+                <p className="text-sm font-medium text-slate-500">Pending Logistics</p>
                 <p className="text-2xl font-bold text-blue-600">
-                  {packages.filter(p => p.status === 'submitted' && p.transportationType === 'courier' && !p.logistics_processed).length}
+                  {packages.filter(p => p.status === 'logistics_pending').length}
                 </p>
               </div>
             </div>
@@ -331,9 +331,9 @@ const LogisticsPage: React.FC = () => {
                 <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500">Processed</p>
+                <p className="text-sm font-medium text-slate-500">Submitted</p>
                 <p className="text-2xl font-bold text-green-600">
-                  {packages.filter(p => p.logistics_processed).length}
+                  {packages.filter(p => p.status === 'submitted').length}
                 </p>
               </div>
             </div>
@@ -345,9 +345,9 @@ const LogisticsPage: React.FC = () => {
                 <Truck className="h-6 w-6 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500">Courier Packages</p>
+                <p className="text-sm font-medium text-slate-500">Approved by Manager</p>
                 <p className="text-2xl font-bold text-purple-600">
-                  {packages.filter(p => p.transportationType === 'courier').length}
+                  {packages.filter(p => p.status === 'approved').length}
                 </p>
               </div>
             </div>
@@ -359,8 +359,10 @@ const LogisticsPage: React.FC = () => {
                 <Package className="h-6 w-6 text-orange-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500">Total Packages</p>
-                <p className="text-2xl font-bold text-orange-600">{packages.length}</p>
+                <p className="text-sm font-medium text-slate-500">Dispatched Packages</p>
+                <p className="text-2xl font-bold text-orange-600">
+                  {packages.filter(p => p.status === 'dispatched').length}
+                </p>
               </div>
             </div>
           </div>
@@ -447,7 +449,7 @@ const LogisticsPage: React.FC = () => {
                           className="text-gray-600 hover:text-gray-800"
                           title="View Details"
                         >
-                          <ExternalLink className="h-4 w-4" />
+                         
                         </button>
                       </div>
                     </td>
@@ -549,9 +551,9 @@ const LogisticsPage: React.FC = () => {
                           </button>
                         ) : (
                           <button
-                            onClick={() => handlePackageSelect(pkg)}
+                            onClick={() => navigate(`/package/${pkg.id}`)}
                             className="text-blue-600 hover:text-blue-800 flex items-center"
-                            title="View/Edit"
+                            title="View Details"
                           >
                             <ExternalLink className="h-4 w-4 mr-1" />
                             View
@@ -562,7 +564,7 @@ const LogisticsPage: React.FC = () => {
                           className="text-gray-600 hover:text-gray-800"
                           title="View Details"
                         >
-                          <ExternalLink className="h-4 w-4" />
+                          
                         </button>
                       </div>
                     </td>
@@ -664,7 +666,7 @@ const LogisticsPage: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => handlePackageSelect(pkg)}
+                          onClick={() => navigate(`/package/${pkg.id}`)}
                           className="text-green-600 hover:text-green-800 flex items-center"
                           title="View Details"
                         >
@@ -676,7 +678,7 @@ const LogisticsPage: React.FC = () => {
                           className="text-gray-600 hover:text-gray-800"
                           title="View Full Details"
                         >
-                          <ExternalLink className="h-4 w-4" />
+                          
                         </button>
                       </div>
                     </td>
@@ -778,7 +780,7 @@ const LogisticsPage: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => handlePackageSelect(pkg)}
+                          onClick={() => navigate(`/package/${pkg.id}`)}
                           className="text-blue-600 hover:text-blue-800 flex items-center"
                           title="View Details"
                         >
@@ -790,7 +792,7 @@ const LogisticsPage: React.FC = () => {
                           className="text-gray-600 hover:text-gray-800"
                           title="View Full Details"
                         >
-                          <ExternalLink className="h-4 w-4" />
+                         
                         </button>
                       </div>
                     </td>
@@ -839,89 +841,100 @@ const LogisticsPage: React.FC = () => {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Package Info */}
-                <div className="bg-slate-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-slate-800 mb-2">Package Information</h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="space-y-2">
-                      <div>
-                        <span className="font-semibold text-slate-900">Consignee Name:</span>
-                        <span className="ml-2 font-medium">{selectedPackage.recipient || 'N/A'}</span>
+                <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
+                  <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                    <Package className="h-5 w-5 mr-2 text-blue-500" />
+                    Package Information
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-3">
+                        <div className="flex items-start">
+                          <span className="w-32 text-slate-600 font-medium">Consignee Name:</span>
+                          <span className="font-medium text-slate-900">{selectedPackage.recipient || 'N/A'}</span>
+                        </div>
+                        <div className="flex items-start">
+                          <span className="w-32 text-slate-600 font-medium">Project Code:</span>
+                          <span className="font-medium text-slate-900">{selectedPackage.projectCode || 'N/A'}</span>
+                        </div>
+                        <div className="flex items-start">
+                          <span className="w-32 text-slate-600 font-medium">Status:</span>
+                          <div className="flex-1">
+                            <StatusBadge status={selectedPackage.status} />
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <span className="font-semibold text-slate-900">Project Code:</span>
-                        <span className="ml-2 font-medium">{selectedPackage.projectCode || 'N/A'}</span>
-                      </div>
-                      <div>
-                        <span className="font-semibold text-slate-900">Remarks:</span>
-                        <span className="ml-2 font-medium">{selectedPackage.remarks || 'N/A'}</span>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                    <div className="flex items-center">
-                      <span className="w-24 font-semibold text-slate-900">Status:</span>
-                      <span className="font-medium">
-                        <StatusBadge status={selectedPackage.status} />
-                      </span>
-                    </div>
-                    {selectedPackage.assignedManager && (
-                      <div className="flex items-center">
-                        <span className="w-24 font-semibold text-slate-900">Manager:</span>
-                        <span className="font-medium">
-                          {selectedPackage.assignedManager.fullName || 
-                          selectedPackage.assignedManager.email || 
-                          'Not Assigned'}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  </div>
-                </div>
-
-                {/* Item Details */}
-                <div className="bg-slate-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-slate-800 mb-4">Item Details</h4>
-                  {selectedPackage.items && selectedPackage.items.length > 0 ? (
-                    <div className="space-y-4">
-                      {selectedPackage.items.map((item: any, index: number) => (
-                        <div key={index} className="border-b border-slate-200 pb-4 last:border-0 last:pb-0">
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div className="space-y-2">
-                              <div>
-                                <span className="font-semibold text-slate-900">Item {index + 1}:</span>
-                              </div>
-                              <div>
-                                <span className="font-semibold text-slate-900">Serial Number:</span>
-                                <span className="ml-2 font-medium">{item.serialNumber || 'N/A'}</span>
-                              </div>
-                              <div>
-                                <span className="font-semibold text-slate-900">HSN Code:</span>
-                                <span className="ml-2 font-medium">{item.hsnCode || 'N/A'}</span>
-                              </div>
-                            </div>
-                            <div className="space-y-2">
-                              <div className="h-6"></div> {/* Empty div for alignment */}
-                              <div>
-                                <span className="font-semibold text-slate-900">Quantity:</span>
-                                <span className="ml-2 font-medium">{item.quantity || '0'}</span>
-                              </div>
-                              <div>
-                                <span className="font-semibold text-slate-900">Unit Price:</span>
-                                <span className="ml-2 font-medium">{item.unitPrice ? `$${item.unitPrice}` : 'N/A'}</span>
-                              </div>
-                              <div>
-                                <span className="font-semibold text-slate-900">Taxable Value:</span>
-                                <span className="ml-2 font-medium">{item.taxableValue ? `$${item.taxableValue}` : 'N/A'}</span>
+                      <div className="space-y-3">
+                        <div className="flex items-start">
+                          <span className="w-32 text-slate-600 font-medium">Remarks:</span>
+                          <span className="font-medium text-slate-900 flex-1">{selectedPackage.remarks || 'N/A'}</span>
+                        </div>
+                        {selectedPackage.assignedManager && (
+                          <div className="flex items-start">
+                            <span className="w-32 text-slate-600 font-medium">Manager:</span>
+                            <div className="flex-1">
+                              <div className="flex items-center">
+                                <span className="font-medium text-slate-900">
+                                  {selectedPackage.assignedManager.fullName || 
+                                  selectedPackage.assignedManager.email || 
+                                  'Not Assigned'}
+                                </span>
                               </div>
                             </div>
                           </div>
-                         
-                        </div>
-                      ))}
+                        )}
+                      </div>
                     </div>
-                  ) : (
-                    <p className="text-slate-500 text-sm">No item details available</p>
-                  )}
-                </div>
+                    </div>
+                    <div className="space-y-3">
+                      {/* Item Details */}
+                      <div className="mt-4">
+                        <h4 className="font-medium text-slate-800 mb-2 flex items-center">
+                          <Package className="h-5 w-5 mr-2 text-blue-500" />
+                          Item Details
+                        </h4>
+                        {selectedPackage.items && selectedPackage.items.length > 0 ? (
+                          <div className="bg-white p-4 rounded-lg border border-slate-200">
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <span className="font-semibold text-slate-900">Description:</span>
+                                <span className="ml-2">{selectedPackage.items[0].description || 'N/A'}</span>
+                              </div>
+                              <div>
+                                <span className="font-semibold text-slate-900">Quantity:</span>
+                                <span className="ml-2">{selectedPackage.items[0].quantity || '1'}</span>
+                              </div>
+                              <div>
+                                <span className="font-semibold text-slate-900">Serial Number:</span>
+                                <span className="ml-2">{selectedPackage.items[0].serial_number || 'N/A'}</span>
+                              </div>
+                              <div>
+                                <span className="font-semibold text-slate-900">HSN Code:</span>
+                                <span className="ml-2">{selectedPackage.items[0].hsn_code || 'N/A'}</span>
+                              </div>
+                              <div>
+                                <span className="font-semibold text-slate-900">Unit Price:</span>
+                                <span className="ml-2">{selectedPackage.items[0].unit_price ? `$${selectedPackage.items[0].unit_price}` : 'N/A'}</span>
+                              </div>
+                              <div>
+                                <span className="font-semibold text-slate-900">Total Value:</span>
+                                <span className="ml-2">
+                                  {selectedPackage.items[0].value ? `$${selectedPackage.items[0].value}` : 'N/A'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-center py-4 text-slate-500">
+                            No item details available
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                
+
+               
 
                 {/* Courier Information */}
                 <div>
